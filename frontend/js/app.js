@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to load content dynamically based on the page
     const loadContent = (page) => {
-        fetch(`/frontend/views/${page}.html`) // Adjust path if needed
+        fetch(`/frontend/views/${page}.html`)
             .then(response => response.text())
             .then(html => {
                 contentDiv.innerHTML = html;

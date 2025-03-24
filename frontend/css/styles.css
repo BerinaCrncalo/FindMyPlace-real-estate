@@ -23,7 +23,7 @@ html {
 }
 
 body {
-    padding-top: 56px; /* This is for your fixed navbar */
+    padding-top: 56px; /* This is for fixed navbar */
 }
 
 section {
@@ -37,7 +37,7 @@ section {
 
 #home {
     background: url('/frontend/static/images/house.png') center/cover no-repeat;
-    height: 70vh; /* Increase height to ensure full image visibility */
+    height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -47,7 +47,7 @@ section {
     display: flex;
     justify-content: center;
     gap: 15px; /* Space between buttons */
-    margin-top: 20px; /* Adjust spacing from text */
+    margin-top: 20px; /* Adjusted spacing from text */
 }
 
 #home .btn {
@@ -69,8 +69,8 @@ section {
 }
 
 #about {
-    margin-top: 10px; /* Adjust as needed */
-    padding-top: 10px; /* Optional: Adds padding inside the section */
+    margin-top: 10px;
+    padding-top: 10px; /*Adds padding inside the section */
 }
 .about-box {
     background-color: #c9c8c8cd;  /* Light gray background */
@@ -101,7 +101,7 @@ section {
 
 .about-box .col-md-6 img {
     max-width: 150px;  /* Control the size of the image */
-    border-radius: 50%;  /* Optional: Make the image round */
+    border-radius: 50%; 
     margin-bottom: 5px;
 }
 
@@ -213,7 +213,7 @@ section {
     padding: 10px 20px;
 }
 #listings {
-    margin-bottom: 10px; /* Add spacing between Listings and About Us */
+    margin-bottom: 10px; /* Added spacing between Listings and About Us */
 }
 
 

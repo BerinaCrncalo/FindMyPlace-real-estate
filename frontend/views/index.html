@@ -388,7 +388,7 @@
                 });
             }
     
-            // Attach event listener to the "FindMyPlace" text for scrolling to the top
+            // Attached event listener to the "FindMyPlace" text for scrolling to the top
             const logoText = document.querySelector('.navbar-brand');
             if (logoText) {
                 logoText.addEventListener('click', function () {
@@ -576,8 +576,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const searchTerm = this.value.toLowerCase();  // Get the value of the search bar
         const houseItems = document.querySelectorAll('.col-md-4');  // Get all house items
         houseItems.forEach(function(item) {
-            const title = item.querySelector('.card-title').textContent.toLowerCase();  // Get title text (case-insensitive)
-            const location = item.querySelector('.card-text').textContent.toLowerCase();  // Get location text (case-insensitive)
+            const title = item.querySelector('.card-title').textContent.toLowerCase();  // Get title text 
+            const location = item.querySelector('.card-text').textContent.toLowerCase();  // Get location text 
 
             // Check if either the title or location includes the search term
             if (title.includes(searchTerm) || location.includes(searchTerm)) {
