@@ -1,0 +1,426 @@
+<section id="listings" class="container text-center page-section">
+    <h2>Find your dream home</h2>
+    <p>Connecting you with the perfect property for your loved ones</p>
+    <!-- Search bar -->
+    <div class="mb-4">
+        <input type="text" class="form-control" id="searchBar" placeholder="Search for a property...">
+    </div>
+    <div class="row" id="houseListings">
+        <!-- House 1 -->
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house1.jpg" class="card-img-top" alt="House 1">
+                <div class="card-body">
+                    <h5 class="card-title">$250,000,000</h5>
+                    <p class="card-text">New York, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse1">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- House 2 -->
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house2.jpg" class="card-img-top" alt="House 2">
+                <div class="card-body">
+                    <h5 class="card-title">$177,000,000</h5>
+                    <p class="card-text">Los Angeles, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse2">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house3.jpg" class="card-img-top" alt="House 3">
+                <div class="card-body">
+                    <h5 class="card-title">$399,000</h5>
+                    <p class="card-text">Chicago, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse3">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house4.jpg" class="card-img-top" alt="House 4">
+                <div class="card-body">
+                    <h5 class="card-title">$150,000,000</h5>
+                    <p class="card-text">Miami, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse4">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house5.jpg" class="card-img-top" alt="House 5">
+                <div class="card-body">
+                    <h5 class="card-title">$64,000,000</h5>
+                    <p class="card-text">Dallas, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse5">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house6.jpg" class="card-img-top" alt="House 6">
+                <div class="card-body">
+                    <h5 class="card-title">$38,000,000</h5>
+                    <p class="card-text">San Francisco, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse6">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house7.jpg" class="card-img-top" alt="House 7">
+                <div class="card-body">
+                    <h5 class="card-title">$17,500,000</h5>
+                    <p class="card-text">Seattle, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse7">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house8.jpg" class="card-img-top" alt="House 8">
+                <div class="card-body">
+                    <h5 class="card-title">$9,000,000</h5>
+                    <p class="card-text">Austin, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse8">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4 house-item">
+            <div class="card">
+                <img src="/frontend/static/images/house9.jpg" class="card-img-top" alt="House 9">
+                <div class="card-body">
+                    <h5 class="card-title">$949,000</h5>
+                    <p class="card-text">Boston, USA</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalHouse9">View Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for House 1 -->
+<div class="modal fade" id="modalHouse1" tabindex="-1" aria-labelledby="modalHouse1Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse1Label">House in New York, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <img src="/frontend/static/images/house1.jpg" class="img-fluid mb-3" alt="House 1">
+                </div>
+                <p><strong>Price:</strong> $250,000,000</p>
+                <p><strong>Location:</strong> New York, USA</p>
+                <p><strong>Description:</strong> This grand estate 6-bedroom house located in the heart of NYC boasts intricate architectural details, a gated entrance, and luxurious interiors. Perfect for those seeking sophistication and prestige.</p>
+
+                <!-- Contact Form -->
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse1">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse1" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 2 -->
+<div class="modal fade" id="modalHouse2" tabindex="-1" aria-labelledby="modalHouse2Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse2Label">House in Los Angeles, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house2.jpg" class="img-fluid mb-3" alt="House 2">
+                </div>
+                <p><strong>Price:</strong> $177,000,000</p>
+                <p><strong>Location:</strong> Los Angeles, USA</p>
+                <p><strong>Description:</strong> A stunning 4-bedroom contemporary home featuring open-concept living, floor-to-ceiling windows, a resort-style infinity pool, and seamless indoor-outdoor flow in a prime location.</p>
+
+                <!-- Contact Form -->
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse2">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Modal for House 3 -->
+<div class="modal fade" id="modalHouse3" tabindex="-1" aria-labelledby="modalHouse3Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse3Label">House in Chicago, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house3.jpg" class="img-fluid mb-3" alt="House 3">
+                </div>
+                <p><strong>Price:</strong> $399,000</p>
+                <p><strong>Location:</strong> Chicago, USA</p>
+                <p><strong>Description:</strong> Beautiful 2-bedroom updated home with classic curb appeal, a welcoming front porch, warm interiors, and lush landscaping—ideal for modern living with historic charm.</p>
+                
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse3">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 4 -->
+<div class="modal fade" id="modalHouse4" tabindex="-1" aria-labelledby="modalHouse4Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse4Label">House in Miami, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house4.jpg" class="img-fluid mb-3" alt="House 4">
+                </div>
+                <p><strong>Price:</strong> $150,000,000</p>
+                <p><strong>Location:</strong> Miami, USA</p>
+                <p><strong>Description:</strong> A stunning 3-bedroom modern estate featuring an expansive outdoor area, sleek architecture, and resort-style living.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse4">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 5 -->
+<div class="modal fade" id="modalHouse5" tabindex="-1" aria-labelledby="modalHouse5Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse5Label">House in Dallas, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house5.jpg" class="img-fluid mb-3" alt="House 5">
+                </div>
+                <p><strong>Price:</strong> $64,000,000</p>
+                <p><strong>Location:</strong> Dallas, USA</p>
+                <p><strong>Description:</strong> A contemporary 4-bedroom masterpiece with striking curb appeal, high-end finishes, and a seamless indoor-outdoor flow.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse5">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 6 -->
+<div class="modal fade" id="modalHouse6" tabindex="-1" aria-labelledby="modalHouse6Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse6Label">House in San Francisco, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house6.jpg" class="img-fluid mb-3" alt="House 6">
+                </div>
+                <p><strong>Price:</strong> $38,000,000</p>
+                <p><strong>Location:</strong> San Francisco, USA</p>
+                <p><strong>Description:</strong> A 4-bedroom unique blend of classic and contemporary design, offering breathtaking views and sustainable features.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse6">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 7 -->
+<div class="modal fade" id="modalHouse7" tabindex="-1" aria-labelledby="modalHouse7Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse7Label">House in Seattle, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house7.jpg" class="img-fluid mb-3" alt="House 7">
+                </div>
+                <p><strong>Price:</strong> $17,500,000</p>
+                <p><strong>Location:</strong> Seattle, USA</p>
+                <p><strong>Description:</strong> A 7-bedroom sleek, contemporary masterpiece featuring floor-to-ceiling windows, expansive balconies, and high-end finishes.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse7">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 8 -->
+<div class="modal fade" id="modalHouse8" tabindex="-1" aria-labelledby="modalHouse8Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse8Label">House in Austin, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house8.jpg" class="img-fluid mb-3" alt="House 8">
+                </div>
+                <p><strong>Price:</strong> $9,000,000</p>
+                <p><strong>Location:</strong> Austin, USA</p>
+                <p><strong>Description:</strong> A beautifully designed 3-bedroom one-story home with a spacious open layout, manicured landscaping, and a peaceful setting.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse8">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for House 9 -->
+<div class="modal fade" id="modalHouse9" tabindex="-1" aria-labelledby="modalHouse9Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHouse9Label">House in Boston, USA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                <img src="/frontend/static/images/house9.jpg" class="img-fluid mb-3" alt="House 9">
+                </div>
+                <p><strong>Price:</strong> $949,000</p>
+                <p><strong>Location:</strong> Boston, USA</p>
+                <p><strong>Description:</strong> A grand, 10-bedroom traditional home with a stately presence, charming shutters, and a luxurious circular driveway.</p>
+
+                <h5>Contact Agent</h5>
+                <form id="contactFormHouse9">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="3" placeholder="Your Message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Send Inquiry</button>
+                </form>
+                <div id="successMessageHouse2" class="mt-3 text-success" style="display: none;">Your inquiry has been sent!</div>
+            </div>
+        </div>
+    </div>
+</div>

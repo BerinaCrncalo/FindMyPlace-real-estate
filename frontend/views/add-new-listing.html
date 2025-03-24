@@ -1,0 +1,41 @@
+<section id="add-new-listing" class="container text-center page-section hidden">
+    <h2>Add New Listing</h2>
+
+    <form id="listing-form" class="w-50 mx-auto">
+        <!-- Photo Upload -->
+        <div class="mb-3">
+            <label for="listing-photo" class="form-label">Upload Photo</label>
+            <input type="file" id="listing-photo" class="form-control" accept="image/*" required>
+            <img id="preview-image" class="mt-2 hidden" style="max-width: 100%; height: auto; border-radius: 10px;">
+        </div>
+
+        <!-- Title -->
+        <div class="mb-3">
+            <input type="text" id="listing-title" class="form-control" placeholder="Listing Title" required>
+        </div>
+
+        <!-- Details -->
+        <div class="mb-3">
+            <textarea id="listing-details" class="form-control" placeholder="Listing Details" rows="3" required></textarea>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+            <input type="number" id="listing-price" class="form-control" placeholder="Price ($)" required>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+            <input type="text" id="listing-location" class="form-control" placeholder="Location" required>
+        </div>
+
+        <!-- Error Message -->
+        <p id="listing-error" class="text-danger"></p>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success">Submit Listing</button>
+    </form>
+
+    <!-- Back Button -->
+    <button id="back-to-home" class="btn btn-secondary mt-3">Back to Home</button>
+</section>
