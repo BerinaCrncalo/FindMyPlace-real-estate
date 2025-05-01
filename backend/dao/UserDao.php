@@ -17,6 +17,13 @@ class UserDao extends BaseDao {
         $stmt = $this->connection->query("SELECT * FROM user");
         return $stmt->fetchAll();
     }
+    // Fetch a user by email
+    public function getByEmail($email) {
+        $stmt = $this->connection->prepare("SELECT * FROM user WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
 
     public function create($data) {
         // Hash the password before inserting
