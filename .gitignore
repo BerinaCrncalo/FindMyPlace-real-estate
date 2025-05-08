@@ -1,0 +1,12 @@
+vendor/
+.DS_Store
+fiveserver.config.js
+.env
+.env.local
+.env.*.local
+/.idea/
+/.vscode/
+dist/
+/build/
+*.local
+

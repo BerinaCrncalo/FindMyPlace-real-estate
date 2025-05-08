@@ -35,6 +35,13 @@ class BaseDao {
         $stmt->execute();
         return $stmt->fetch();
     }
+    // Get a user by email
+    public function getByEmail($email) {
+        $stmt = $this->connection->prepare("SELECT * FROM user WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
 
     public function delete($id) {
         $stmt = $this->connection->prepare("DELETE FROM $this->table WHERE id = :id");
