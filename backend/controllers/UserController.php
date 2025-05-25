@@ -181,5 +181,54 @@ class UserController {
             Flight::json(['message' => $e->getMessage()], 400);
         }
     }
+        /**
+     * @OA\Post(
+     *     path="/users/login",
+     *     summary="Authenticate user",
+     *     description="Authenticates a user and returns their data (excluding password).",
+     *     operationId="loginUser",
+     *     tags={"Users"},
+     *     requestBody={
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"email", "password"},
+     *                 @OA\Property(property="email", type="string", example="john_doe@example.com"),
+     *                 @OA\Property(property="password", type="string", example="password123")
+     *             )
+     *         )
+     *     },
+     *     @OA\Response(
+     *         response=200,
+     *         description="User authenticated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="email", type="string", example="john_doe@example.com"),
+     *             @OA\Property(property="username", type="string", example="john_doe"),
+     *             @OA\Property(property="role", type="string", example="user")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid email or password.")
+     *         )
+     *     )
+     * )
+     */
+    public static function loginUser() {
+        $data = Flight::request()->data->getData();
+        $userService = new UserService();
+
+        try {
+            $user = $userService->authenticateUser($data['email'], $data['password']);
+            Flight::json($user, 200);
+        } catch (Exception $e) {
+            Flight::json(['message' => $e->getMessage()], 401);
+        }
+    }
+
 }
 ?>

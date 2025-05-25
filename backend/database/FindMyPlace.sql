@@ -184,7 +184,7 @@
 --   `password` varchar(255) NOT NULL,
 --   `phone_number` varchar(50) DEFAULT NULL,
 --   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
---   `role` enum('buyer','seller','admin') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+--   `role` enum('buyer','seller','admin') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'user',
 --   PRIMARY KEY (`id`),
 --   UNIQUE KEY `User_UNIQUE` (`email`)
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

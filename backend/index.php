@@ -1,10 +1,17 @@
 <?php
 require 'vendor/autoload.php';
 
-// FlightPHP Database Connection
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+// Setup DB connection via FlightPHP
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=FindMyPlace', 'root', 'database1'));
 
-// Register DAOs
+// Load Middleware classes
+require_once 'middleware/AuthMiddleware.php';
+require_once 'middleware/RequestLogger.php';
+
+// Load DAOs
 require_once "dao/BaseDao.php";
 require_once 'dao/CategoryDao.php';
 require_once 'dao/ContactMessageDao.php';
@@ -15,7 +22,7 @@ require_once 'dao/SavedSearchesDao.php';
 require_once 'dao/UserDao.php';
 require_once 'dao/UserProfilesDao.php';
 
-// Register Services
+// Load Services
 require_once 'services/CategoryService.php';
 require_once 'services/ContactMessageService.php';
 require_once 'services/FavoritesService.php';
@@ -25,7 +32,7 @@ require_once 'services/SavedSearchesService.php';
 require_once 'services/UserService.php';
 require_once 'services/UserProfilesService.php';
 
-// Register Controllers
+// Load Controllers
 require_once 'controllers/CategoryController.php';
 require_once 'controllers/ContactMessageController.php';
 require_once 'controllers/FavoritesController.php';
@@ -35,67 +42,338 @@ require_once 'controllers/SavedSearchesController.php';
 require_once 'controllers/UserController.php';
 require_once 'controllers/UserProfilesController.php';
 
+// Basic request logging for every request
+Flight::before('start', function(&$params, &$output) {
+    RequestLogger::logRequest();
+});
+
+// ------------------
+// Authentication routes (no auth required here)
+
+// Register new user (hash password)
+Flight::route('POST /users', function() {
+    AuthMiddleware::validateJson(['username', 'email', 'password']);
+    $controller = new UserController();
+    $controller->registerUser();
+});
+
+// Login user (returns JWT token)
+Flight::route('POST /login', function() {
+    AuthMiddleware::validateJson(['email', 'password']);
+    $controller = new UserController();
+    $controller->loginUser();
+});
+
+// ------------------
+// Middleware helpers for authorization
+
+function requireAdmin() {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin()) {
+        Flight::halt(403, json_encode(['error' => 'Admin access required']));
+    }
+}
+
+function requireUserOrAdmin() {
+    AuthMiddleware::requireUser();
+    // Additional user-specific checks can be placed here if needed
+}
+
+// ------------------
 // Routes for Categories
-Flight::route('POST /categories', [CategoryController::class, 'createCategory']);
-Flight::route('GET /categories', [CategoryController::class, 'getAllCategories']);
-Flight::route('GET /categories/@id', [CategoryController::class, 'getCategoryById']);
-Flight::route('PUT /categories/@id', [CategoryController::class, 'updateCategory']);
-Flight::route('DELETE /categories/@id', [CategoryController::class, 'deleteCategory']);
 
-// Routes for Contact Messages
-Flight::route('POST /contact_messages', [ContactMessageController::class, 'createContactMessage']);
-Flight::route('GET /contact_messages', [ContactMessageController::class, 'getAllContactMessages']);
-Flight::route('GET /contact_messages/@id', [ContactMessageController::class, 'getContactMessageById']);
-Flight::route('PUT /contact_messages/@id', [ContactMessageController::class, 'updateContactMessage']);
-Flight::route('DELETE /contact_messages/@id', [ContactMessageController::class, 'deleteContactMessage']);
+// Create Category - only Admin
+Flight::route('POST /categories', function() {
+    requireAdmin();
+    AuthMiddleware::validateJson(['name']);
+    $controller = new CategoryController();
+    $controller->createCategory();
+});
 
-// Routes for Favorites
-Flight::route('POST /favorites', [FavoritesController::class, 'addToFavorites']);
-Flight::route('GET /favorites/user/@user_id', [FavoritesController::class, 'getFavoritesByUserId']);
-Flight::route('DELETE /favorites/@id', [FavoritesController::class, 'removeFromFavorites']);
+// Get all categories - everyone can view
+Flight::route('GET /categories', function() {
+    $controller = new CategoryController();
+    $controller->getAllCategories();
+});
 
-// Routes for Listing Images
-Flight::route('POST /listing_images', [ListingImageController::class, 'addImageToListing']);
-Flight::route('GET /listing_images', [ListingImageController::class, 'getAllImages']);
-Flight::route('GET /listing_images/@id', [ListingImageController::class, 'getImageById']);
-Flight::route('PUT /listing_images/@id', [ListingImageController::class, 'updateImage']);
-Flight::route('DELETE /listing_images/@id', [ListingImageController::class, 'deleteImage']);
+// Get category by id - everyone can view
+Flight::route('GET /categories/@id', function($id) {
+    $controller = new CategoryController();
+    $controller->getCategoryById($id);
+});
 
-// Routes for Listings
-Flight::route('POST /listings', [ListingsController::class, 'createListing']);
-Flight::route('GET /listings', [ListingsController::class, 'getAllListings']);
-Flight::route('GET /listings/@id', [ListingsController::class, 'getListingById']);
-Flight::route('PUT /listings/@id', [ListingsController::class, 'updateListing']);
-Flight::route('DELETE /listings/@id', [ListingsController::class, 'deleteListing']);
+// Update Category - only Admin
+Flight::route('PUT /categories/@id', function($id) {
+    requireAdmin();
+    AuthMiddleware::validateJson(['name']);
+    $controller = new CategoryController();
+    $controller->updateCategory($id);
+});
 
-// Routes for Saved Searches
-Flight::route('POST /saved_searches', [SavedSearchesController::class, 'createSavedSearch']);
-Flight::route('GET /saved_searches/@user_id', [SavedSearchesController::class, 'getSavedSearchesByUserId']);
-Flight::route('PUT /saved_searches/@id', [SavedSearchesController::class, 'updateSavedSearch']);
-Flight::route('DELETE /saved_searches/@id', [SavedSearchesController::class, 'deleteSavedSearch']);
+// Delete Category - only Admin
+Flight::route('DELETE /categories/@id', function($id) {
+    requireAdmin();
+    $controller = new CategoryController();
+    $controller->deleteCategory($id);
+});
 
-// Routes for Users
-Flight::route('POST /users', [UserController::class, 'registerUser']);
-Flight::route('GET /users/@id', [UserController::class, 'getUserById']);
-Flight::route('PUT /users/@id', [UserController::class, 'updateUser']);
-Flight::route('DELETE /users/@id', [UserController::class, 'deleteUser']);
+// ------------------
+// Contact Messages
 
-// Routes for User Profiles
-Flight::route('POST /user_profiles', [UserProfilesController::class, 'createProfile']);
-Flight::route('GET /user_profiles/@user_id', [UserProfilesController::class, 'getProfile']);
-Flight::route('PUT /user_profiles/@id', [UserProfilesController::class, 'updateProfile']);
-Flight::route('DELETE /user_profiles/@id', [UserProfilesController::class, 'deleteProfile']);
+// Create Contact Message - any authenticated user
+Flight::route('POST /contact_messages', function() {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['name', 'email', 'message']);
+    $controller = new ContactMessageController();
+    $controller->createContactMessage();
+});
 
-// Route to display Swagger UI page
+// Get all contact messages - only Admin
+Flight::route('GET /contact_messages', function() {
+    requireAdmin();
+    $controller = new ContactMessageController();
+    $controller->getAllContactMessages();
+});
+
+// Get contact message by id - only Admin
+Flight::route('GET /contact_messages/@id', function($id) {
+    requireAdmin();
+    $controller = new ContactMessageController();
+    $controller->getContactMessageById($id);
+});
+
+// Update contact message - only Admin
+Flight::route('PUT /contact_messages/@id', function($id) {
+    requireAdmin();
+    AuthMiddleware::validateJson(['message']);
+    $controller = new ContactMessageController();
+    $controller->updateContactMessage($id);
+});
+
+// Delete contact message - only Admin
+Flight::route('DELETE /contact_messages/@id', function($id) {
+    requireAdmin();
+    $controller = new ContactMessageController();
+    $controller->deleteContactMessage($id);
+});
+
+// ------------------
+// Favorites
+
+// Add to favorites - any authenticated user
+Flight::route('POST /favorites', function() {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['user_id', 'listing_id']);
+    $controller = new FavoritesController();
+    $controller->addToFavorites();
+});
+
+// Get favorites by user id - only that user or Admin
+Flight::route('GET /favorites/user/@user_id', function($user_id) {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin() && AuthMiddleware::getUserId() != $user_id) {
+        Flight::halt(403, json_encode(['error' => 'Access denied']));
+    }
+    $controller = new FavoritesController();
+    $controller->getFavoritesByUserId($user_id);
+});
+
+// Remove from favorites - user who owns or Admin
+Flight::route('DELETE /favorites/@id', function($id) {
+    requireUserOrAdmin();
+    $controller = new FavoritesController();
+    $controller->removeFromFavorites($id);
+});
+
+// ------------------
+// Listing Images
+
+// Add image to listing - Admin only
+Flight::route('POST /listing_images', function() {
+    requireAdmin();
+    AuthMiddleware::validateJson(['listing_id', 'image_url']);
+    $controller = new ListingImageController();
+    $controller->addImageToListing();
+});
+
+// Get all images - public
+Flight::route('GET /listing_images', function() {
+    $controller = new ListingImageController();
+    $controller->getAllImages();
+});
+
+// Get image by id - public
+Flight::route('GET /listing_images/@id', function($id) {
+    $controller = new ListingImageController();
+    $controller->getImageById($id);
+});
+
+// Update image - Admin only
+Flight::route('PUT /listing_images/@id', function($id) {
+    requireAdmin();
+    AuthMiddleware::validateJson(['image_url']);
+    $controller = new ListingImageController();
+    $controller->updateImage($id);
+});
+
+// Delete image - Admin only
+Flight::route('DELETE /listing_images/@id', function($id) {
+    requireAdmin();
+    $controller = new ListingImageController();
+    $controller->deleteImage($id);
+});
+
+// ------------------
+// Listings
+
+// Create listing - Admin only
+Flight::route('POST /listings', function() {
+    requireAdmin();
+    AuthMiddleware::validateJson(['title', 'description', 'price']);
+    $controller = new ListingsController();
+    $controller->createListing();
+});
+
+// Get all listings - public
+Flight::route('GET /listings', function() {
+    $controller = new ListingsController();
+    $controller->getAllListings();
+});
+
+// Get listing by id - public
+Flight::route('GET /listings/@id', function($id) {
+    $controller = new ListingsController();
+    $controller->getListingById($id);
+});
+
+// Update listing - Admin only
+Flight::route('PUT /listings/@id', function($id) {
+    requireAdmin();
+    AuthMiddleware::validateJson(['title']);
+    $controller = new ListingsController();
+    $controller->updateListing($id);
+});
+
+// Delete listing - Admin only
+Flight::route('DELETE /listings/@id', function($id) {
+    requireAdmin();
+    $controller = new ListingsController();
+    $controller->deleteListing($id);
+});
+
+// ------------------
+// Saved Searches
+
+// Create saved search - any authenticated user
+Flight::route('POST /saved_searches', function() {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['user_id', 'search_query']);
+    $controller = new SavedSearchesController();
+    $controller->createSavedSearch();
+});
+
+// Get saved searches by user - user or admin
+Flight::route('GET /saved_searches/@user_id', function($user_id) {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin() && AuthMiddleware::getUserId() != $user_id) {
+        Flight::halt(403, json_encode(['error' => 'Access denied']));
+    }
+    $controller = new SavedSearchesController();
+    $controller->getSavedSearchesByUserId($user_id);
+});
+
+// Update saved search - user or admin
+Flight::route('PUT /saved_searches/@id', function($id) {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['search_query']);
+    $controller = new SavedSearchesController();
+    $controller->updateSavedSearch($id);
+});
+
+// Delete saved search - user or admin
+Flight::route('DELETE /saved_searches/@id', function($id) {
+    requireUserOrAdmin();
+    $controller = new SavedSearchesController();
+    $controller->deleteSavedSearch($id);
+});
+
+// ------------------
+// Users
+
+// Get user by id - user themselves or admin
+Flight::route('GET /users/@id', function($id) {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin() && AuthMiddleware::getUserId() != $id) {
+        Flight::halt(403, json_encode(['error' => 'Access denied']));
+    }
+    $controller = new UserController();
+    $controller->getUserById($id);
+});
+
+// Update user - user themselves or admin
+Flight::route('PUT /users/@id', function($id) {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin() && AuthMiddleware::getUserId() != $id) {
+        Flight::halt(403, json_encode(['error' => 'Access denied']));
+    }
+    AuthMiddleware::validateJson(['email']);
+    $controller = new UserController();
+    $controller->updateUser($id);
+});
+
+// Delete user - only admin
+Flight::route('DELETE /users/@id', function($id) {
+    requireAdmin();
+    $controller = new UserController();
+    $controller->deleteUser($id);
+});
+
+// ------------------
+// User Profiles
+
+// Create profile - user themselves or admin
+Flight::route('POST /user_profiles', function() {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['user_id', 'bio']);
+    $controller = new UserProfilesController();
+    $controller->createProfile();
+});
+
+// Get profile - user themselves or admin
+Flight::route('GET /user_profiles/@user_id', function($user_id) {
+    AuthMiddleware::requireUser();
+    if (!AuthMiddleware::isAdmin() && AuthMiddleware::getUserId() != $user_id) {
+        Flight::halt(403, json_encode(['error' => 'Access denied']));
+    }
+    $controller = new UserProfilesController();
+    $controller->getProfile($user_id);
+});
+
+// Update profile - user themselves or admin
+Flight::route('PUT /user_profiles/@id', function($id) {
+    requireUserOrAdmin();
+    AuthMiddleware::validateJson(['bio']);
+    $controller = new UserProfilesController();
+    $controller->updateProfile($id);
+});
+
+// Delete profile - user themselves or admin
+Flight::route('DELETE /user_profiles/@id', function($id) {
+    requireUserOrAdmin();
+    $controller = new UserProfilesController();
+    $controller->deleteProfile($id);
+});
+
+// ------------------
+// Swagger API docs
+
 Flight::route('GET /docs', function() {
-    require 'swagger-ui.php';  // This will display the Swagger UI page
+    require 'swagger-ui.php';
 });
-
-// Route to generate OpenAPI documentation (Swagger JSON)
 Flight::route('GET /generate-docs', function() {
-    require 'generate-docs.php';  // This will generate and output the OpenAPI JSON
+    require 'generate-docs.php';
 });
 
-// Start FlightPHP Application
+// ------------------
+// Start the Flight app
 Flight::start();
-?>
