@@ -78,6 +78,39 @@ function requireUserOrAdmin() {
     AuthMiddleware::requireUser();
     // Additional user-specific checks can be placed here if needed
 }
+function requireSellerOrAdmin() {
+    AuthMiddleware::requireUser();  // check if user is authenticated first
+
+    $headers = getallheaders();
+    if (!isset($headers['Authorization'])) {
+        Flight::halt(401, json_encode(['error' => 'Authorization header missing']));
+    }
+
+    $authHeader = $headers['Authorization'];
+    if (strpos($authHeader, 'Bearer ') !== 0) {
+        Flight::halt(401, json_encode(['error' => 'Invalid Authorization header format']));
+    }
+
+    $token = substr($authHeader, 7); // remove "Bearer " prefix
+
+    try {
+        $secretKey = 'secret_key1'; 
+        $decoded = Firebase\JWT\JWT::decode($token, new Firebase\JWT\Key($secretKey, 'HS256'));
+
+        if (!isset($decoded->role)) {
+            Flight::halt(403, json_encode(['error' => 'Role claim missing in token']));
+        }
+
+        $role = $decoded->role;
+        if ($role !== 'admin' && $role !== 'seller') {
+            Flight::halt(403, json_encode(['error' => 'Only sellers or admins can add listings']));
+        }
+
+    } catch (Exception $e) {
+        Flight::halt(401, json_encode(['error' => 'Invalid token: ' . $e->getMessage()]));
+    }
+}
+
 
 // ------------------
 // Routes for Categories
@@ -228,7 +261,7 @@ Flight::route('DELETE /listing_images/@id', function($id) {
 
 // Create listing - Admin only
 Flight::route('POST /listings', function() {
-    requireAdmin();
+    requireSellerOrAdmin();
     AuthMiddleware::validateJson(['title', 'description', 'price']);
     $controller = new ListingsController();
     $controller->createListing();
