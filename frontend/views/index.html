@@ -356,6 +356,11 @@
         <p>&copy; 2025 FindMyPlace 🏡🤍. All rights reserved.</p>
     </footer>
     <script>
+        const currentUser = {
+        username: "berina",
+        role: "seller" // or "admin"
+        };
+
         document.addEventListener("DOMContentLoaded", function () {
             const navbarCollapse = document.querySelector(".navbar-collapse");
     
@@ -637,6 +642,54 @@ document.addEventListener("DOMContentLoaded", function () {
             form.reset();
         }
     });
+     // Role-based permission for listing form submission
+     document.getElementById('listing-form').addEventListener('submit', (e) => {
+        const allowedRoles = ['seller', 'admin'];
+        if (!window.currentUser || !allowedRoles.includes(window.currentUser.role)) {
+            e.preventDefault();
+            document.getElementById('listing-error').textContent = "You do not have permission to add a listing.";
+            return false;
+        }
+    });
+
+    // Show/hide add listing button and handle its click/back buttons
+    document.addEventListener('DOMContentLoaded', () => {
+        const addListingButton = document.getElementById('add-listing-button');
+        const backToHomeButton = document.getElementById('back-to-home');
+        const allowedRoles = ['seller', 'admin'];
+
+        // Use your existing currentUser object or fallback to window.currentUser
+        const user = window.currentUser || currentUser;
+
+        if (user && allowedRoles.includes(user.role)) {
+            addListingButton.style.display = 'block';
+        } else {
+            addListingButton.style.display = 'none';
+        }
+
+        addListingButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAddListingSection();
+        });
+
+        backToHomeButton.addEventListener('click', () => {
+            hideAddListingSection();
+        });
+    });
+
+    function showAddListingSection() {
+        document.getElementById('add-new-listing').classList.remove('hidden');
+        document.querySelectorAll('section').forEach(section => {
+            if (section.id !== 'add-new-listing') {
+                section.classList.add('hidden');
+            }
+        });
+    }
+
+    function hideAddListingSection() {
+        document.getElementById('add-new-listing').classList.add('hidden');
+        document.querySelectorAll('section').forEach(section => section.classList.remove('hidden'));
+    }
 });
     </script>
     
