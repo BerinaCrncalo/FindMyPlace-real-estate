@@ -2,21 +2,73 @@
     <h2>Contact</h2>
     <p>Get in touch with us for inquiries.</p>
     <form class="w-50 mx-auto" id="contact-form">
-        <div class="mb-3">
-            <input type="text" class="form-control" placeholder="Your Name" id="name">
-            <div id="name-error" class="text-danger"></div> <!-- Error message -->
-        </div>
-        <div class="mb-3">
-            <input type="email" class="form-control" placeholder="Your Email" id="email">
-            <div id="email-error" class="text-danger"></div> <!-- Error message -->
-        </div>
-        <div class="mb-3">
-            <textarea class="form-control" rows="3" placeholder="Your Message" id="message"></textarea>
-            <div id="message-error" class="text-danger"></div> <!-- Error message -->
-        </div>
-        <button type="submit" class="btn btn-primary">Send Message</button>
+      <div class="mb-3">
+        <input type="text" class="form-control" placeholder="Your Name" id="name" />
+        <div id="name-error" class="text-danger"></div>
+      </div>
+      <div class="mb-3">
+        <input type="email" class="form-control" placeholder="Your Email" id="email" />
+        <div id="email-error" class="text-danger"></div>
+      </div>
+      <div class="mb-3">
+        <textarea class="form-control" rows="3" placeholder="Your Message" id="message"></textarea>
+        <div id="message-error" class="text-danger"></div>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Message</button>
     </form>
     <div id="success-message" class="text-success mt-3" style="display: none;">
-        <p>Message successfully sent! We will reach out as soon as possible.</p>
+      <p>Message successfully sent! We will reach out as soon as possible.</p>
     </div>
-</section>
+  </section>
+  
+  <script>
+  document.getElementById("contact-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+  
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
+  
+    let valid = true;
+    document.getElementById("name-error").textContent = "";
+    document.getElementById("email-error").textContent = "";
+    document.getElementById("message-error").textContent = "";
+  
+    if (!name) {
+      document.getElementById("name-error").textContent = "Name is required.";
+      valid = false;
+    }
+  
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      document.getElementById("email-error").textContent = "Valid email is required.";
+      valid = false;
+    }
+  
+    if (!message) {
+      document.getElementById("message-error").textContent = "Message is required.";
+      valid = false;
+    }
+  
+    if (!valid) return;
+  
+    try {
+      const response = await fetch("/contact_messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, user_id: 1 }) // Replace 1 with dynamic user ID
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        document.getElementById("contact-form").reset();
+        document.getElementById("success-message").style.display = "block";
+      } else {
+        alert(result.message || "Failed to send message.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error sending message.");
+    }
+  });
+  </script>

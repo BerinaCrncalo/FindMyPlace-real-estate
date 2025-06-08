@@ -5,41 +5,42 @@
 class ListingsController {
 
     /**
-     * @OA\Post(
-     *     path="/listings",
-     *     summary="Create a new listing",
-     *     description="Creates a new listing for a user.",
-     *     operationId="createListing",
-     *     tags={"Listings"},
-     *     requestBody={
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 type="object",
-     *                 required={"title", "description", "price", "category_id"},
-     *                 @OA\Property(property="title", type="string", example="Beautiful Apartment"),
-     *                 @OA\Property(property="description", type="string", example="A lovely two-bedroom apartment."),
-     *                 @OA\Property(property="price", type="number", format="float", example=1200.00),
-     *                 @OA\Property(property="category_id", type="integer", example=1)
-     *             )
-     *         )
-     *     },
-     *     @OA\Response(
-     *         response=201,
-     *         description="Listing created successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Listing created successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid input",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Error message")
-     *         )
-     *     )
-     * )
-     */
+    * @OA\Post(
+    *     path="/add-new-listing",
+    *     summary="Create a new listing",
+    *     description="Creates a new listing for a user.",
+    *     operationId="createListing",
+    *     tags={"Listings"},
+    *     requestBody={
+    *         @OA\MediaType(
+    *             mediaType="application/json",
+    *             @OA\Schema(
+    *                 type="object",
+    *                 required={"title", "description", "price", "category_id"},
+    *                 @OA\Property(property="title", type="string", example="Beautiful Apartment"),
+    *                 @OA\Property(property="description", type="string", example="A lovely two-bedroom apartment."),
+    *                 @OA\Property(property="price", type="number", format="float", example=1200.00),
+    *                 @OA\Property(property="category_id", type="integer", example=1)
+    *                 @OA\Property(property="photo_path", type="string", example="uploads/images/listing1.jpg")
+    *             )
+    *         )
+    *     },
+    *     @OA\Response(
+    *         response=201,
+    *         description="Listing created successfully",
+    *         @OA\JsonContent(
+    *             @OA\Property(property="message", type="string", example="Listing created successfully")
+    *         )
+    *     ),
+    *     @OA\Response(
+    *         response=400,
+    *         description="Invalid input",
+    *         @OA\JsonContent(
+    *             @OA\Property(property="message", type="string", example="Error message")
+    *         )
+    *     )
+    * )
+    */
     public static function createListing() {
         $data = Flight::request()->data->getData();
         $listingsService = new ListingsService();

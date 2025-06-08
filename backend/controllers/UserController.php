@@ -4,6 +4,14 @@
  */
 class UserController {
 
+    // Sanitize input to prevent XSS
+    private static function sanitize($input) {
+        if (is_array($input)) {
+            return array_map([self::class, 'sanitize'], $input);
+        }
+        return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+    }
+
     /**
      * @OA\Post(
      *     path="/users/register",
@@ -41,6 +49,24 @@ class UserController {
      */
     public static function registerUser() {
         $data = Flight::request()->data->getData();
+
+        // Sanitize inputs to prevent XSS
+        $data = self::sanitize($data);
+
+        // Validate required fields and formats
+        if (empty($data['username']) || strlen($data['username']) < 3) {
+            Flight::json(['message' => 'Username is required and must be at least 3 characters long.'], 400);
+            return;
+        }
+        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            Flight::json(['message' => 'Valid email is required.'], 400);
+            return;
+        }
+        if (empty($data['password']) || strlen($data['password']) < 6) {
+            Flight::json(['message' => 'Password is required and must be at least 6 characters long.'], 400);
+            return;
+        }
+
         $userService = new UserService();
 
         try {
@@ -79,6 +105,9 @@ class UserController {
      * )
      */
     public static function getUserById($id) {
+        // Sanitize ID (cast to int to avoid injection)
+        $id = intval($id);
+
         $userService = new UserService();
 
         try {
@@ -132,6 +161,25 @@ class UserController {
      */
     public static function updateUser($id) {
         $data = Flight::request()->data->getData();
+
+        // Sanitize inputs
+        $data = self::sanitize($data);
+        $id = intval($id);
+
+        // Validate required fields
+        if (empty($data['username']) || strlen($data['username']) < 3) {
+            Flight::json(['message' => 'Username is required and must be at least 3 characters long.'], 400);
+            return;
+        }
+        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            Flight::json(['message' => 'Valid email is required.'], 400);
+            return;
+        }
+        if (empty($data['password']) || strlen($data['password']) < 6) {
+            Flight::json(['message' => 'Password is required and must be at least 6 characters long.'], 400);
+            return;
+        }
+
         $userService = new UserService();
 
         try {
@@ -172,6 +220,8 @@ class UserController {
      * )
      */
     public static function deleteUser($id) {
+        $id = intval($id);
+
         $userService = new UserService();
 
         try {
@@ -181,7 +231,8 @@ class UserController {
             Flight::json(['message' => $e->getMessage()], 400);
         }
     }
-        /**
+
+    /**
      * @OA\Post(
      *     path="/users/login",
      *     summary="Authenticate user",
@@ -201,34 +252,40 @@ class UserController {
      *     },
      *     @OA\Response(
      *         response=200,
-     *         description="User authenticated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
-     *             @OA\Property(property="email", type="string", example="john_doe@example.com"),
-     *             @OA\Property(property="username", type="string", example="john_doe"),
-     *             @OA\Property(property="role", type="string", example="user")
-     *         )
+     *         description="User authenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Invalid credentials",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Invalid email or password.")
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
      *         )
      *     )
      * )
      */
     public static function loginUser() {
         $data = Flight::request()->data->getData();
+
+        // Sanitize inputs
+        $data = self::sanitize($data);
+
+        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            Flight::json(['message' => 'Valid email is required.'], 400);
+            return;
+        }
+        if (empty($data['password'])) {
+            Flight::json(['message' => 'Password is required.'], 400);
+            return;
+        }
+
         $userService = new UserService();
 
         try {
             $user = $userService->authenticateUser($data['email'], $data['password']);
             Flight::json($user, 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 401);
+            Flight::json(['message' => 'Invalid credentials'], 401);
         }
     }
-
 }
-?>

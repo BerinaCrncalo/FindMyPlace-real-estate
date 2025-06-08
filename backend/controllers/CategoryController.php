@@ -38,13 +38,34 @@ class CategoryController {
      *     )
      * )
      */
+    
+    // Sanitize string inputs to prevent XSS
+    private static function sanitizeInput(string $input): string {
+        return htmlspecialchars(strip_tags($input), ENT_QUOTES, 'UTF-8');
+    }
+
+    // Validate ID parameter (must be positive integer)
+    private static function validateId($id): int {
+        if (!is_numeric($id) || intval($id) <= 0) {
+            throw new Exception("Invalid ID");
+        }
+        return intval($id);
+    }
+
     public static function createCategory() {
         $data = Flight::request()->data->getData();
-        $categoryService = new CategoryService();
 
         try {
-            // Call service to create the category
+            // Validate required field
+            if (empty($data['name'])) {
+                throw new Exception("Name is required");
+            }
+            // Sanitize input to prevent XSS
+            $data['name'] = self::sanitizeInput($data['name']);
+
+            $categoryService = new CategoryService();
             $categoryId = $categoryService->createCategory($data);
+
             Flight::json(['message' => 'Category created successfully', 'category_id' => $categoryId], 201);
         } catch (Exception $e) {
             Flight::json(['message' => $e->getMessage()], 400);
@@ -99,9 +120,10 @@ class CategoryController {
      * )
      */
     public static function getCategoryById($id) {
-        $categoryService = new CategoryService();
-        
         try {
+            $id = self::validateId($id);
+
+            $categoryService = new CategoryService();
             $category = $categoryService->getCategoryById($id);
             Flight::json($category);
         } catch (Exception $e) {
@@ -150,10 +172,18 @@ class CategoryController {
      */
     public static function updateCategory($id) {
         $data = Flight::request()->data->getData();
-        $categoryService = new CategoryService();
 
         try {
+            $id = self::validateId($id);
+
+            if (empty($data['name'])) {
+                throw new Exception("Name is required");
+            }
+            $data['name'] = self::sanitizeInput($data['name']);
+
+            $categoryService = new CategoryService();
             $categoryService->updateCategory($id, $data);
+
             Flight::json(['message' => 'Category updated successfully'], 200);
         } catch (Exception $e) {
             Flight::json(['message' => $e->getMessage()], 400);
@@ -190,10 +220,12 @@ class CategoryController {
      * )
      */
     public static function deleteCategory($id) {
-        $categoryService = new CategoryService();
-
         try {
+            $id = self::validateId($id);
+
+            $categoryService = new CategoryService();
             $categoryService->deleteCategory($id);
+
             Flight::json(['message' => 'Category deleted successfully'], 200);
         } catch (Exception $e) {
             Flight::json(['message' => $e->getMessage()], 400);

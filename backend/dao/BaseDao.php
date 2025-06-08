@@ -2,59 +2,63 @@
 
 class BaseDao {
     protected $connection;
-    private $table;
+    protected $table;
 
-    // Initializes connection and table name
+    // Accept only whitelisted table names
+    private static $allowedTables = ['user', 'user_profiles'];
+
     public function __construct($table) {
+        if (!in_array($table, self::$allowedTables)) {
+            throw new InvalidArgumentException("Invalid table name.");
+        }
+
         $this->table = $table;
 
-        // Connection parameters
         $host = "localhost";
         $dbname = "FindMyPlace";
         $username = "root";
         $password = "database1";
 
         try {
-            $this->connection = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $this->connection = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             die("DB connection failed: " . $e->getMessage());
         }
     }
 
-    // Fetch records
     public function getAll() {
-        $stmt = $this->connection->query("SELECT * FROM $this->table");
+        $query = "SELECT * FROM `{$this->table}`";
+        $stmt = $this->connection->query($query);
         return $stmt->fetchAll();
     }
 
-    // Fetch record by ID
     public function getById($id) {
-        $stmt = $this->connection->prepare("SELECT * FROM $this->table WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt = $this->connection->prepare("SELECT * FROM `{$this->table}` WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
-    // Get a user by email
+
     public function getByEmail($email) {
         $stmt = $this->connection->prepare("SELECT * FROM user WHERE email = :email");
-        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     public function delete($id) {
-        $stmt = $this->connection->prepare("DELETE FROM $this->table WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt = $this->connection->prepare("DELETE FROM `{$this->table}` WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
 
     public function create($data) {
-        // Build the query dynamically from the $data
         $columns = implode(", ", array_keys($data));
         $placeholders = ":" . implode(", :", array_keys($data));
 
-        $stmt = $this->connection->prepare("INSERT INTO $this->table ($columns) VALUES ($placeholders)");
+        $stmt = $this->connection->prepare("INSERT INTO `{$this->table}` ($columns) VALUES ($placeholders)");
 
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
@@ -65,22 +69,19 @@ class BaseDao {
     }
 
     public function update($id, $data) {
-        // Builds SET part of the query dynamically
         $setClause = "";
         foreach ($data as $key => $value) {
-            $setClause .= "$key = :$key, ";
+            $setClause .= "`$key` = :$key, ";
         }
         $setClause = rtrim($setClause, ", ");
 
-        // Prepares SQL statement
-        $stmt = $this->connection->prepare("UPDATE $this->table SET $setClause WHERE id = :id");
         $data['id'] = $id;
+        $stmt = $this->connection->prepare("UPDATE `{$this->table}` SET $setClause WHERE id = :id");
 
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
 
-        // Executes and return the number of affected rows
         $stmt->execute();
         return $stmt->rowCount();
     }

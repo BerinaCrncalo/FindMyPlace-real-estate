@@ -128,6 +128,7 @@
 --   `price` decimal(15,2) NOT NULL,
 --   `location` varchar(255) NOT NULL,
 --   `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+--   `photo_path` varchar(255) NULL,
 --   PRIMARY KEY (`id`),
 --   CONSTRAINT `listings_category_FK` FOREIGN KEY (`id`) REFERENCES `category` (`id`),
 --   CONSTRAINT `listings_user_FK` FOREIGN KEY (`id`) REFERENCES `user` (`id`)

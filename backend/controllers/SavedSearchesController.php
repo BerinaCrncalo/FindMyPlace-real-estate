@@ -42,11 +42,20 @@ class SavedSearchesController {
         $data = Flight::request()->data->getData();
         $savedSearchesService = new SavedSearchesService();
 
+        // Input validation
+        if (!isset($data['user_id'], $data['search_term']) || !is_numeric($data['user_id']) || !is_string($data['search_term'])) {
+            Flight::json(['message' => 'Invalid input: user_id must be a number and search_term must be a string'], 400);
+            return;
+        }
+
+        // Sanitize input
+        $data['search_term'] = htmlspecialchars($data['search_term'], ENT_QUOTES, 'UTF-8');
+
         try {
             $savedSearchesService->createSavedSearch($data);
             Flight::json(['message' => 'Saved search created successfully'], 201);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Failed to create saved search: ' . $e->getMessage()], 400);
         }
     }
 
@@ -80,11 +89,17 @@ class SavedSearchesController {
     public static function getSavedSearchesByUserId($user_id) {
         $savedSearchesService = new SavedSearchesService();
 
+        // Validate user_id
+        if (!is_numeric($user_id)) {
+            Flight::json(['message' => 'Invalid user_id'], 400);
+            return;
+        }
+
         try {
-            $savedSearches = $savedSearchesService->getSavedSearchesByUserId($user_id);
+            $savedSearches = $savedSearchesService->getSavedSearchesByUserId((int)$user_id);
             Flight::json($savedSearches);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Error retrieving saved searches: ' . $e->getMessage()], 400);
         }
     }
 
@@ -131,11 +146,20 @@ class SavedSearchesController {
         $data = Flight::request()->data->getData();
         $savedSearchesService = new SavedSearchesService();
 
+        // Validate inputs
+        if (!is_numeric($id) || !isset($data['search_term']) || !is_string($data['search_term'])) {
+            Flight::json(['message' => 'Invalid input: id must be numeric and search_term must be a string'], 400);
+            return;
+        }
+
+        // Sanitize input
+        $data['search_term'] = htmlspecialchars($data['search_term'], ENT_QUOTES, 'UTF-8');
+
         try {
-            $savedSearchesService->updateSavedSearch($id, $data);
+            $savedSearchesService->updateSavedSearch((int)$id, $data);
             Flight::json(['message' => 'Saved search updated successfully'], 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Failed to update saved search: ' . $e->getMessage()], 400);
         }
     }
 
@@ -171,11 +195,17 @@ class SavedSearchesController {
     public static function deleteSavedSearch($id) {
         $savedSearchesService = new SavedSearchesService();
 
+        // Validate ID
+        if (!is_numeric($id)) {
+            Flight::json(['message' => 'Invalid saved search ID'], 400);
+            return;
+        }
+
         try {
-            $savedSearchesService->deleteSavedSearch($id);
+            $savedSearchesService->deleteSavedSearch((int)$id);
             Flight::json(['message' => 'Saved search deleted successfully'], 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Failed to delete saved search: ' . $e->getMessage()], 400);
         }
     }
 }

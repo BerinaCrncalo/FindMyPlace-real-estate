@@ -41,14 +41,29 @@ class ContactMessageController {
      */
     public static function createContactMessage() {
         $data = Flight::request()->data->getData();
-        $contactMessageService = new ContactMessageService();
+
+        // Basic validation
+        if (
+            !isset($data['user_id']) || !is_int($data['user_id']) ||
+            !isset($data['message']) || !is_string($data['message']) || trim($data['message']) === ''
+        ) {
+            Flight::json(['message' => 'Invalid input: user_id and message are required, message must be a non-empty string'], 400);
+            return;
+        }
+
+        // Sanitize message to prevent XSS
+        $message = htmlspecialchars(trim($data['message']), ENT_QUOTES, 'UTF-8');
+        $userId = $data['user_id'];
 
         try {
-            // Call service to create the contact message
-            $contactMessageId = $contactMessageService->createContactMessage($data);
+            $contactMessageService = new ContactMessageService();
+            $contactMessageId = $contactMessageService->createContactMessage([
+                'user_id' => $userId,
+                'message' => $message
+            ]);
             Flight::json(['message' => 'Contact message created successfully', 'contact_message_id' => $contactMessageId], 201);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Error creating contact message: ' . $e->getMessage()], 400);
         }
     }
 
@@ -67,9 +82,13 @@ class ContactMessageController {
      * )
      */
     public static function getAllContactMessages() {
-        $contactMessageService = new ContactMessageService();
-        $contactMessages = $contactMessageService->getAllContactMessages();
-        Flight::json($contactMessages);
+        try {
+            $contactMessageService = new ContactMessageService();
+            $contactMessages = $contactMessageService->getAllContactMessages();
+            Flight::json($contactMessages, 200);
+        } catch (Exception $e) {
+            Flight::json(['message' => 'Error fetching contact messages: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -91,22 +110,31 @@ class ContactMessageController {
      *         @OA\JsonContent(ref="#/components/schemas/ContactMessage")
      *     ),
      *     @OA\Response(
-     *         response=400,
+     *         response=404,
      *         description="Message not found",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Error message")
+     *             @OA\Property(property="message", type="string", example="Contact message not found")
      *         )
      *     )
      * )
      */
     public static function getContactMessageById($id) {
-        $contactMessageService = new ContactMessageService();
+        if (!is_numeric($id) || intval($id) <= 0) {
+            Flight::json(['message' => 'Invalid contact message ID'], 400);
+            return;
+        }
+        $id = intval($id);
 
         try {
+            $contactMessageService = new ContactMessageService();
             $contactMessage = $contactMessageService->getContactMessageById($id);
-            Flight::json($contactMessage);
+            if (!$contactMessage) {
+                Flight::json(['message' => 'Contact message not found'], 404);
+                return;
+            }
+            Flight::json($contactMessage, 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Error fetching contact message: ' . $e->getMessage()], 500);
         }
     }
 
@@ -150,14 +178,34 @@ class ContactMessageController {
      * )
      */
     public static function updateContactMessage($id) {
+        if (!is_numeric($id) || intval($id) <= 0) {
+            Flight::json(['message' => 'Invalid contact message ID'], 400);
+            return;
+        }
+        $id = intval($id);
+
         $data = Flight::request()->data->getData();
-        $contactMessageService = new ContactMessageService();
+
+        if (!isset($data['message']) || !is_string($data['message']) || trim($data['message']) === '') {
+            Flight::json(['message' => 'Invalid input: message is required and must be a non-empty string'], 400);
+            return;
+        }
+
+        // Sanitize message
+        $message = htmlspecialchars(trim($data['message']), ENT_QUOTES, 'UTF-8');
 
         try {
-            $contactMessageService->updateContactMessage($id, $data);
+            $contactMessageService = new ContactMessageService();
+            $updated = $contactMessageService->updateContactMessage($id, ['message' => $message]);
+
+            if (!$updated) {
+                Flight::json(['message' => 'Contact message not found or could not be updated'], 400);
+                return;
+            }
+
             Flight::json(['message' => 'Contact message updated successfully'], 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Error updating contact message: ' . $e->getMessage()], 400);
         }
     }
 
@@ -191,14 +239,24 @@ class ContactMessageController {
      * )
      */
     public static function deleteContactMessage($id) {
-        $contactMessageService = new ContactMessageService();
+        if (!is_numeric($id) || intval($id) <= 0) {
+            Flight::json(['message' => 'Invalid contact message ID'], 400);
+            return;
+        }
+        $id = intval($id);
 
         try {
-            $contactMessageService->deleteContactMessage($id);
+            $contactMessageService = new ContactMessageService();
+            $deleted = $contactMessageService->deleteContactMessage($id);
+
+            if (!$deleted) {
+                Flight::json(['message' => 'Contact message not found or could not be deleted'], 400);
+                return;
+            }
+
             Flight::json(['message' => 'Contact message deleted successfully'], 200);
         } catch (Exception $e) {
-            Flight::json(['message' => $e->getMessage()], 400);
+            Flight::json(['message' => 'Error deleting contact message: ' . $e->getMessage()], 400);
         }
     }
 }
-?>

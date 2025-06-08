@@ -7,49 +7,61 @@ class SavedSearchesDao extends BaseDao {
     }
 
     public function getByUserId($user_id) {
-        // Fetches all saved searches for a specific user
         $stmt = $this->connection->prepare("SELECT * FROM saved_searches WHERE user_id = :user_id");
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public function create($data) {
-        // Adds the current timestamp for the 'created_at' field
-        $data['created_at'] = date('Y-m-d H:i:s');  // This is the format for MySQL DATETIME
+        if (!$this->isValidSavedSearch($data)) {
+            throw new InvalidArgumentException("Invalid saved search data.");
+        }
 
-        // Insers a new saved search
+        $createdAt = date('Y-m-d H:i:s');
+
         $stmt = $this->connection->prepare(
             "INSERT INTO saved_searches (user_id, search_query, created_at) 
              VALUES (:user_id, :search_query, :created_at)"
         );
 
-        // Binds parameters for user ID, search query, and created_at timestamp
-        $stmt->bindParam(':user_id', $data['user_id']);
-        $stmt->bindParam(':search_query', $data['search_query']);
-        $stmt->bindParam(':created_at', $data['created_at']);
-        
+        $stmt->bindValue(':user_id', $data['user_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':search_query', htmlspecialchars($data['search_query']), PDO::PARAM_STR);
+        $stmt->bindValue(':created_at', $createdAt, PDO::PARAM_STR);
 
         $stmt->execute();
-        return $this->connection->lastInsertId(); 
+        return $this->connection->lastInsertId();
     }
 
     public function update($id, $data) {
-        // Updates the search query for a specific saved search
-        $data['id'] = $id;  // Includes the ID for the WHERE clause
+        if (!isset($data['search_query']) || !is_string($data['search_query'])) {
+            throw new InvalidArgumentException("Invalid search query.");
+        }
+
         $stmt = $this->connection->prepare(
             "UPDATE saved_searches 
              SET search_query = :search_query 
              WHERE id = :id"
         );
 
-        $stmt->execute($data);
+        $stmt->bindValue(':search_query', htmlspecialchars($data['search_query']), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 
     public function delete($id) {
         $stmt = $this->connection->prepare("DELETE FROM saved_searches WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+    private function isValidSavedSearch($data) {
+        return isset($data['user_id'], $data['search_query']) &&
+               filter_var($data['user_id'], FILTER_VALIDATE_INT) !== false &&
+               is_string($data['search_query']);
     }
 }
 ?>

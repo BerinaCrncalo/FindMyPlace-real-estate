@@ -7,59 +7,72 @@ class ContactMessageDao extends BaseDao {
     }
 
     public function getById($id) {
-        // Fetch a single contact message by its ID
         $stmt = $this->connection->prepare("SELECT * FROM contact_messages WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     public function getAll() {
-        // Fetch all contact messages
         $stmt = $this->connection->query("SELECT * FROM contact_messages");
         return $stmt->fetchAll();
     }
 
     public function create($data) {
-        // Add the current timestamp for the 'sent_at' field
-        $data['sent_at'] = date('Y-m-d H:i:s');  // Format for DATETIME
+        if (!$this->isValidContactMessage($data)) {
+            throw new InvalidArgumentException("Invalid contact message data.");
+        }
 
-        // Insert the new contact message
+        $sentAt = date('Y-m-d H:i:s');
+
         $stmt = $this->connection->prepare(
             "INSERT INTO contact_messages (name, email, message, sent_at, contact_messages_user_FK) 
              VALUES (:name, :email, :message, :sent_at, :user_id)"
         );
 
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':message', $data['message']);
-        $stmt->bindParam(':sent_at', $data['sent_at']);
-        $stmt->bindParam(':user_id', $data['user_id']); 
+        $stmt->bindValue(':name', htmlspecialchars($data['name']), PDO::PARAM_STR);
+        $stmt->bindValue(':email', htmlspecialchars($data['email']), PDO::PARAM_STR);
+        $stmt->bindValue(':message', htmlspecialchars($data['message']), PDO::PARAM_STR);
+        $stmt->bindValue(':sent_at', $sentAt, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $data['user_id'], PDO::PARAM_INT);
 
         $stmt->execute();
         return $this->connection->lastInsertId(); 
     }
 
     public function update($id, $data) {
-        // The sent_at field should not be updated
-        unset($data['sent_at']);
-        $data['id'] = $id;
+        if (!$this->isValidContactMessage($data, false)) {
+            throw new InvalidArgumentException("Invalid update data.");
+        }
 
-        // Update the contact message by ID
         $stmt = $this->connection->prepare(
             "UPDATE contact_messages 
              SET name = :name, email = :email, message = :message 
              WHERE id = :id"
         );
 
-        $stmt->execute($data);
+        $stmt->bindValue(':name', htmlspecialchars($data['name']), PDO::PARAM_STR);
+        $stmt->bindValue(':email', htmlspecialchars($data['email']), PDO::PARAM_STR);
+        $stmt->bindValue(':message', htmlspecialchars($data['message']), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 
     public function delete($id) {
-        // Delete a contact message by its ID
         $stmt = $this->connection->prepare("DELETE FROM contact_messages WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+    private function isValidContactMessage($data, $requireUserId = true) {
+        return isset($data['name'], $data['email'], $data['message']) &&
+               is_string($data['name']) &&
+               is_string($data['email']) &&
+               is_string($data['message']) &&
+               (!$requireUserId || isset($data['user_id']) && filter_var($data['user_id'], FILTER_VALIDATE_INT));
     }
 }
 ?>

@@ -6,59 +6,52 @@ class ContactMessageService {
         $this->contactMessageDao = new ContactMessageDao();
     }
 
-    // Create a new contact message
     public function createContactMessage($data) {
-        // Validation logic
-        if (empty($data['name'])) {
-            throw new Exception("Name is required.");
-        }
-        if (empty($data['email'])) {
-            throw new Exception("Email is required.");
-        }
-        if (empty($data['message'])) {
-            throw new Exception("Message is required.");
-        }
+        $name = htmlspecialchars(trim($data['name'] ?? ''));
+        $email = filter_var(trim($data['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+        $message = htmlspecialchars(trim($data['message'] ?? ''));
+        $user_id = intval($data['user_id'] ?? 0); // Adjust based on session/auth if needed
 
-        // Call DAO to insert the contact message
-        $contactMessageId = $this->contactMessageDao->create($data);
-        return $contactMessageId;
+        if (!$name) throw new Exception("Name is required.");
+        if (!$email) throw new Exception("Valid email is required.");
+        if (!$message) throw new Exception("Message is required.");
+        if (!$user_id) throw new Exception("User ID is required.");
+
+        return $this->contactMessageDao->create([
+            'name' => $name,
+            'email' => $email,
+            'message' => $message,
+            'user_id' => $user_id
+        ]);
     }
 
-    // Get all contact messages
     public function getAllContactMessages() {
         return $this->contactMessageDao->getAll();
     }
 
-    // Get a contact message by ID
     public function getContactMessageById($id) {
-        if (empty($id)) {
-            throw new Exception("Contact message ID is required.");
-        }
+        if (empty($id)) throw new Exception("Contact message ID is required.");
         return $this->contactMessageDao->getById($id);
     }
 
-    // Update a contact message
     public function updateContactMessage($id, $data) {
-        // Validation logic
-        if (empty($data['name'])) {
-            throw new Exception("Name is required.");
-        }
-        if (empty($data['email'])) {
-            throw new Exception("Email is required.");
-        }
-        if (empty($data['message'])) {
-            throw new Exception("Message is required.");
+        $name = htmlspecialchars(trim($data['name'] ?? ''));
+        $email = filter_var(trim($data['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+        $message = htmlspecialchars(trim($data['message'] ?? ''));
+
+        if (!$name || !$email || !$message) {
+            throw new Exception("All fields are required.");
         }
 
-        $this->contactMessageDao->update($id, $data);
+        $this->contactMessageDao->update($id, [
+            'name' => $name,
+            'email' => $email,
+            'message' => $message
+        ]);
     }
 
-    // Delete a contact message
     public function deleteContactMessage($id) {
-        if (empty($id)) {
-            throw new Exception("Contact message ID is required.");
-        }
-
+        if (empty($id)) throw new Exception("Contact message ID is required.");
         $this->contactMessageDao->delete($id);
     }
 }
