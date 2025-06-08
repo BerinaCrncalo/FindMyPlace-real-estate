@@ -1,41 +1,48 @@
 <section id="add-new-listing" class="container text-center page-section hidden">
     <h2>Add New Listing</h2>
-
-    <form id="listing-form" class="w-50 mx-auto">
-        <!-- Photo Upload -->
-        <div class="mb-3">
-            <label for="listing-photo" class="form-label">Upload Photo</label>
-            <input type="file" id="listing-photo" class="form-control" accept="image/*" required>
-            <img id="preview-image" class="mt-2 hidden" style="max-width: 100%; height: auto; border-radius: 10px;">
-        </div>
-
-        <!-- Title -->
-        <div class="mb-3">
-            <input type="text" id="listing-title" class="form-control" placeholder="Listing Title" required>
-        </div>
-
-        <!-- Details -->
-        <div class="mb-3">
-            <textarea id="listing-details" class="form-control" placeholder="Listing Details" rows="3" required></textarea>
-        </div>
-
-        <!-- Price -->
-        <div class="mb-3">
-            <input type="number" id="listing-price" class="form-control" placeholder="Price ($)" required>
-        </div>
-
-        <!-- Location -->
-        <div class="mb-3">
-            <input type="text" id="listing-location" class="form-control" placeholder="Location" required>
-        </div>
-
-        <!-- Error Message -->
-        <p id="listing-error" class="text-danger"></p>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-success">Submit Listing</button>
+    <form id="listing-form" class="w-50 mx-auto" enctype="multipart/form-data" method="POST" novalidate>
+      <div class="mb-3">
+        <label for="listing-photo" class="form-label">Upload Photo</label>
+        <input type="file" id="listing-photo" name="photo" class="form-control" accept="image/*" required>
+        <img id="preview-image" class="mt-2 hidden" style="max-width: 100%; height: auto; border-radius: 10px;">
+      </div>
+  
+      <div class="mb-3">
+        <input type="text" id="listing-title" name="title" class="form-control" placeholder="Listing Title" required maxlength="100">
+      </div>
+  
+      <div class="mb-3">
+        <textarea id="listing-details" name="details" class="form-control" placeholder="Listing Details" rows="3" required maxlength="500"></textarea>
+      </div>
+  
+      <div class="mb-3">
+        <input type="number" id="listing-price" name="price" class="form-control" placeholder="Price ($)" required min="0" step="0.01">
+      </div>
+  
+      <div class="mb-3">
+        <input type="text" id="listing-location" name="location" class="form-control" placeholder="Location" required maxlength="100">
+      </div>
+  
+      <p id="listing-error" class="text-danger"></p>
+      <button type="submit" class="btn btn-success">Submit Listing</button>
     </form>
-
-    <!-- Back Button -->
-    <button id="back-to-home" class="btn btn-secondary mt-3">Back to Home</button>
-</section>
+  </section>
+  
+  <script>
+  document.getElementById("listing-form").addEventListener("submit", function (e) {
+    const title = document.getElementById("listing-title").value.trim();
+    const details = document.getElementById("listing-details").value.trim();
+    const location = document.getElementById("listing-location").value.trim();
+    const error = document.getElementById("listing-error");
+    const xssPattern = /<[^>]*script|on\w+=|javascript:/gi;
+  
+    if (xssPattern.test(title) || xssPattern.test(details) || xssPattern.test(location)) {
+      e.preventDefault();
+      error.textContent = "Invalid input: HTML or JavaScript not allowed.";
+      return;
+    }
+  
+    error.textContent = "";
+  });
+  </script>
+  

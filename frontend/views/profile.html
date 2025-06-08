@@ -1,15 +1,39 @@
 <div class="container">
     <h2 class="my-4">Your Profile</h2>
     <p>Here you can view and update your personal details.</p>
-    <form>
+    <form id="profile-form" method="POST" action="/update-profile" onsubmit="return validateForm()">
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" value="JohnDoe" disabled>
+            <input type="text" class="form-control" id="username" name="username" value="JohnDoe" disabled>
         </div>
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" value="john.doe@example.com">
+            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" value="john.doe@example.com" required>
+            <div id="email-error" class="text-danger mt-1"></div>
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 </div>
+
+<script>
+function validateForm() {
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('email-error');
+    emailError.textContent = '';
+
+    // Basic email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailInput.value) {
+        emailError.textContent = 'Email is required.';
+        return false;
+    }
+
+    if (!emailRegex.test(emailInput.value)) {
+        emailError.textContent = 'Please enter a valid email address.';
+        return false;
+    }
+
+    return true;
+}
+</script>

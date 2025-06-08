@@ -7,39 +7,49 @@ class CategoryDao extends BaseDao {
     }
 
     public function getById($id) {
-        // Fetch a single category by its ID
         $stmt = $this->connection->prepare("SELECT * FROM category WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     public function getAll() {
-        // Fetch all categories
         $stmt = $this->connection->query("SELECT * FROM category");
         return $stmt->fetchAll();
     }
 
     public function create($data) {
-        // Insert a new category
+        if (!$this->isValidCategoryData($data)) {
+            throw new InvalidArgumentException("Invalid category data.");
+        }
+
         $stmt = $this->connection->prepare("INSERT INTO category (name) VALUES (:name)");
-        $stmt->bindParam(':name', $data['name']);
+        $stmt->bindValue(':name', htmlspecialchars($data['name']), PDO::PARAM_STR);
         $stmt->execute();
         return $this->connection->lastInsertId(); 
     }
 
     public function update($id, $data) {
-        // Update category information based on ID
-        $data['id'] = $id;
+        if (!$this->isValidCategoryData($data)) {
+            throw new InvalidArgumentException("Invalid category data.");
+        }
+
         $stmt = $this->connection->prepare("UPDATE category SET name = :name WHERE id = :id");
-        $stmt->execute($data);
+        $stmt->bindValue(':name', htmlspecialchars($data['name']), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 
     public function delete($id) {
-        // Delete category by ID
         $stmt = $this->connection->prepare("DELETE FROM category WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+    private function isValidCategoryData($data) {
+        return isset($data['name']) && is_string($data['name']) && strlen(trim($data['name'])) > 0 && strlen($data['name']) <= 255;
     }
 }
 ?>

@@ -2,22 +2,22 @@
     <h2>Register</h2>
     <div id="register-form">
         <h3>Register</h3>
-        <form id="registration-form" class="w-50 mx-auto" action="/register" method="POST" onsubmit="return validatePasswords()">
+        <form id="registration-form" class="w-50 mx-auto" action="/register" method="POST" onsubmit="return validateRegistrationForm()">
             <div class="mb-3">
-                <label for="full-name" class="form-label">Full Name</label>
-                <input type="text" id="full-name" class="form-control" placeholder="Full Name" required>
+                <label for="register-full-name" class="form-label">Full Name</label>
+                <input type="text" id="register-full-name" name="full_name" class="form-control" placeholder="Full Name" required minlength="3" maxlength="100">
             </div>
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-control" placeholder="Email" required>
+                <label for="register-email" class="form-label">Email</label>
+                <input type="email" id="register-email" name="email" class="form-control" placeholder="Email" required>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-control" placeholder="Password" required>
+                <label for="register-password" class="form-label">Password</label>
+                <input type="password" id="register-password" name="password" class="form-control" placeholder="Password" required minlength="6">
             </div>
             <div class="mb-3">
-                <label for="confirm-password" class="form-label">Confirm Password</label>
-                <input type="password" id="confirm-password" class="form-control" placeholder="Confirm Password" required>
+                <label for="register-confirm-password" class="form-label">Confirm Password</label>
+                <input type="password" id="register-confirm-password" name="confirm_password" class="form-control" placeholder="Confirm Password" required minlength="6">
             </div>
             <p id="password-error" class="text-danger"></p>
             <button type="submit" class="btn btn-success">Register</button>
@@ -28,11 +28,29 @@
 </section>
 
 <script>
-    function validatePasswords() {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
+    function validateRegistrationForm() {
+        const fullName = document.getElementById("register-full-name").value.trim();
+        const email = document.getElementById("register-email").value.trim();
+        const password = document.getElementById("register-password").value;
+        const confirmPassword = document.getElementById("register-confirm-password").value;
         const errorElement = document.getElementById("password-error");
+        errorElement.textContent = "";
 
+        // Email regex pattern
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (fullName.length < 3) {
+            errorElement.textContent = "Full name must be at least 3 characters.";
+            return false;
+        }
+        if (!emailPattern.test(email)) {
+            errorElement.textContent = "Please enter a valid email address.";
+            return false;
+        }
+        if (password.length < 6) {
+            errorElement.textContent = "Password must be at least 6 characters.";
+            return false;
+        }
         if (password !== confirmPassword) {
             errorElement.textContent = "Passwords do not match.";
             return false;
