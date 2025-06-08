@@ -27,7 +27,7 @@ class BaseDao {
             die("DB connection failed: " . $e->getMessage());
         }
     }
-
+    
     public function getAll() {
         $query = "SELECT * FROM `{$this->table}`";
         $stmt = $this->connection->query($query);
